@@ -1,13 +1,19 @@
+// external modules
 #[macro_use]
 extern crate rocket;
 use rocket::{get, http::Status, serde::json::Json};
 
-#[get("/")]
-fn hello() -> Result<Json<String>, Status> {
-    Ok(Json(String::from("Hello from Chance's code!")))
-}
+// local modules
+mod api;
+mod models;
+mod repository;
+
+use api::pet::create_pet;
+use repository::mongodb::MongoDBRepo;
 
 #[launch]
 fn rocket() -> _ {
-    rocket::build().mount("/", routes![hello])
+    let db = MongoDBRepo::init();
+
+    rocket::build().manage(db).mount("/", routes![create_pet])
 }
