@@ -4,7 +4,7 @@ use dotenv::dotenv;
 
 use mongodb::{
     bson::{doc, extjson::de::Error, oid::ObjectId},
-    results::InsertOneResult,
+    results::{InsertOneResult, UpdateResult},
     sync::{Client, Collection},
 };
 
@@ -58,5 +58,28 @@ impl MongoDBRepo {
             .expect("Error getting pet details");
 
         return Ok(pet_detail.unwrap());
+    }
+
+    pub fn update_pet(&self, id: &String, new_pet: Pet) -> Result<UpdateResult, Error> {
+        let object_id = ObjectId::parse_str(id).unwrap();
+
+        let filter = doc! {"_id": object_id};
+
+        let new_document = doc! {
+            "$set":
+                {
+                    "id": new_pet.id,
+                    "name": new_pet.name,
+                    "breed": new_pet.breed,
+                },
+        };
+
+        let updated_document = self
+            .collection
+            .update_one(filter, new_document, None)
+            .ok()
+            .expect("Error updating user");
+
+        Ok(updated_document)
     }
 }
