@@ -20,3 +20,19 @@ pub fn create_pet(
         Err(_) => Err(Status::InternalServerError),
     }
 }
+
+#[get("/pet/<path>")]
+pub fn get_pet(db: &State<MongoDBRepo>, path: String) -> Result<Json<Pet>, Status> {
+    let id = path;
+
+    if id.is_empty() {
+        return Err(Status::BadRequest);
+    };
+
+    let pet_detail = db.get_pet(&id);
+
+    match pet_detail {
+        Ok(pet) => Ok(Json(pet)),
+        Err(_) => Err(Status::InternalServerError),
+    }
+}

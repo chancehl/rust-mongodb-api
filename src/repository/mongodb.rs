@@ -3,7 +3,7 @@ extern crate dotenv;
 use dotenv::dotenv;
 
 use mongodb::{
-    bson::extjson::de::Error,
+    bson::{doc, extjson::de::Error, oid::ObjectId},
     results::InsertOneResult,
     sync::{Client, Collection},
 };
@@ -44,5 +44,19 @@ impl MongoDBRepo {
             .expect("Error creating pet");
 
         return Ok(pet);
+    }
+
+    pub fn get_pet(&self, id: &String) -> Result<Pet, Error> {
+        let object_id = ObjectId::parse_str(id).unwrap();
+
+        let filter = doc! { "_id": object_id };
+
+        let pet_detail = self
+            .collection
+            .find_one(filter, None)
+            .ok()
+            .expect("Error getting pet details");
+
+        return Ok(pet_detail.unwrap());
     }
 }
