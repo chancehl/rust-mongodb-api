@@ -71,7 +71,22 @@ pub fn update_pet(
         }
         Err(_) => Err(Status::InternalServerError),
     }
-                };
+}
+
+#[delete("/pet/<path>")]
+pub fn delete_pet(db: &State<MongoDBRepo>, path: String) -> Result<Json<&str>, Status> {
+    let id = path;
+
+    if id.is_empty() {
+        return Err(Status::BadRequest);
+    };
+
+    let delete_result = db.delete_pet(&id);
+
+    match delete_result {
+        Ok(res) => {
+            if res.deleted_count == 1 {
+                return Ok(Json("Pet successfully deleted"));
             } else {
                 return Err(Status::NotFound);
             }
