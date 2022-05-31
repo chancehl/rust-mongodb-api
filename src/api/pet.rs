@@ -62,8 +62,15 @@ pub fn update_pet(
             if update.matched_count == 1 {
                 let updated_user_info = db.get_pet(&id);
                 return match updated_user_info {
-                    Ok(user) => Ok(Json(user)),
+                    Ok(pet) => Ok(Json(pet)),
                     Err(_) => Err(Status::InternalServerError),
+                };
+            } else {
+                return Err(Status::NotFound);
+            }
+        }
+        Err(_) => Err(Status::InternalServerError),
+    }
                 };
             } else {
                 return Err(Status::NotFound);
