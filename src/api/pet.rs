@@ -94,3 +94,13 @@ pub fn delete_pet(db: &State<MongoDBRepo>, path: String) -> Result<Json<&str>, S
         Err(_) => Err(Status::InternalServerError),
     }
 }
+
+#[get("/pets")]
+pub fn get_all_pets(db: &State<MongoDBRepo>) -> Result<Json<Vec<Pet>>, Status> {
+    let users = db.get_all_pets();
+
+    match users {
+        Ok(users) => Ok(Json(users)),
+        Err(_) => Err(Status::InternalServerError),
+    }
+}

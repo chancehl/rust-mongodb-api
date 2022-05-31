@@ -96,4 +96,16 @@ impl MongoDBRepo {
 
         Ok(pet_detail)
     }
+
+    pub fn get_all_pets(&self) -> Result<Vec<Pet>, Error> {
+        let cursors = self
+            .collection
+            .find(None, None)
+            .ok()
+            .expect("Error getting list of pets");
+
+        let pets = cursors.map(|doc| doc.unwrap()).collect();
+
+        Ok(pets)
+    }
 }
